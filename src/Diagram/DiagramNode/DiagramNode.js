@@ -22,7 +22,7 @@ const DiagramNode = (props) => {
   const { ref, onDragStart, onDrag } = useDrag({ throttleBy: 14 }); // get the drag n drop methods
   const dragStartPoint = useRef(coordinates); // keeps the drag start point in a persistent reference
 
-  if (!disableDrag) {
+  if (!disableDrag || disableDrag === 'x' || disableDrag === 'y') {
     // when drag starts, save the starting coordinates into the `dragStartPoint` ref
     onDragStart(() => {
       dragStartPoint.current = coordinates;
@@ -34,8 +34,8 @@ const DiagramNode = (props) => {
         event.stopImmediatePropagation();
         event.stopPropagation();
         const nextCoords = [
-          dragStartPoint.current[0] - info.offset[0],
-          dragStartPoint.current[1] - info.offset[1],
+          dragStartPoint.current[0] - (disableDrag === 'x' ? 0 : info.offset[0]),
+          dragStartPoint.current[1] - (disableDrag === 'y' ? 0 : info.offset[1]),
         ];
         onPositionChange(id, nextCoords);
       }
@@ -143,7 +143,7 @@ DiagramNode.propTypes = {
    * The possible className
    */
   className: PropTypes.string,
-  disableDrag: PropTypes.bool,
+  disableDrag: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
 };
 
 DiagramNode.defaultProps = {
